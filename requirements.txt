@@ -1,0 +1,13 @@
+pandas>=2.0
+numpy
+requests
+python-dotenv
+pydantic>=2.5
+SQLAlchemy>=2.0
+psycopg2-binary ; platform_system != "Windows"
+pyarrow
+pytest
+ruff
+black
+pydantic>=2.0
+pydantic-settings>=2.2

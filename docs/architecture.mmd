@@ -1,0 +1,6 @@
+flowchart TD
+    A[Open‑Meteo API] --> B[Normalize JSON]
+    B --> C[Hourly dataframe]
+    C --> D[Group by date/city]
+    D --> E[(CSV/Parquet)]
+    D --> F[(SQL - opcional)]

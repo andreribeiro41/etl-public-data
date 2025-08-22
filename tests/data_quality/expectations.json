@@ -1,0 +1,25 @@
+{
+  "name": "basic_expectations_weather_daily",
+  "checks": [
+    {
+      "column": "city",
+      "expectation": "not_null"
+    },
+    {
+      "column": "date",
+      "expectation": "not_null"
+    },
+    {
+      "column": "temp_min",
+      "expectation": "not_null"
+    },
+    {
+      "column": "temp_max",
+      "expectation": "not_null"
+    },
+    {
+      "column": "hours",
+      "expectation": ">= 1"
+    }
+  ]
+}
