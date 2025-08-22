@@ -76,7 +76,8 @@ def aggregate_daily(df_hourly: pd.DataFrame) -> pd.DataFrame:
     return g
 
 def load_files(df_hourly: pd.DataFrame, df_daily: pd.DataFrame) -> None:
-    out = Path("data/processed"); out.mkdir(parents=True, exist_ok=True)
+    out = Path("data/processed") 
+    out.mkdir(parents=True, exist_ok=True)
     df_hourly.to_parquet(out / "hourly_weather.parquet", index=False)
     df_daily.to_parquet(out / "daily_weather.parquet", index=False)
     df_hourly.to_csv(out / "hourly_weather.csv", index=False)
