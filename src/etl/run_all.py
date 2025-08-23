@@ -18,7 +18,10 @@ CITY_COORDS = {
     "manaus": (-3.10, -60.02),
 }
 
-def extract_city(city_slug: str, past_days: int, forecast_days: int, timezone: str) -> pd.DataFrame:
+
+def extract_city(
+    city_slug: str, past_days: int, forecast_days: int, timezone: str
+) -> pd.DataFrame:
     lat, lon = CITY_COORDS[city_slug]
     url = (
         "https://api.open-meteo.com/v1/forecast"
@@ -40,13 +43,16 @@ def extract_city(city_slug: str, past_days: int, forecast_days: int, timezone: s
     except Exception:
         # fallback offline
         rng = pd.date_range(end=pd.Timestamp.now().floor("h"), periods=24, freq="H")
-        return pd.DataFrame({
-            "time": rng,
-            "temperature_2m": [20 + (i % 6) for i in range(len(rng))],
-            "relativehumidity_2m": [70 - (i % 10) for i in range(len(rng))],
-            "precipitation": [0.1 if i % 7 == 0 else 0.0 for i in range(len(rng))],
-            "city": city_slug,
-        })
+        return pd.DataFrame(
+            {
+                "time": rng,
+                "temperature_2m": [20 + (i % 6) for i in range(len(rng))],
+                "relativehumidity_2m": [70 - (i % 10) for i in range(len(rng))],
+                "precipitation": [0.1 if i % 7 == 0 else 0.0 for i in range(len(rng))],
+                "city": city_slug,
+            }
+        )
+
 
 def transform_hourly(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
@@ -59,6 +65,7 @@ def transform_hourly(df: pd.DataFrame) -> pd.DataFrame:
         if c not in df.columns:
             df[c] = pd.NA
     return df[cols].sort_values(["city", "time"]).reset_index(drop=True)
+
 
 def aggregate_daily(df_hourly: pd.DataFrame) -> pd.DataFrame:
     df = df_hourly.copy()
@@ -75,13 +82,15 @@ def aggregate_daily(df_hourly: pd.DataFrame) -> pd.DataFrame:
         g[c] = g[c].astype(float).round(2)
     return g
 
+
 # def load_files(df_hourly: pd.DataFrame, df_daily: pd.DataFrame) -> None:
-#     out = Path("data/processed") 
+#     out = Path("data/processed")
 #     out.mkdir(parents=True, exist_ok=True)
 #     df_hourly.to_parquet(out / "hourly_weather.parquet", index=False)
 #     df_daily.to_parquet(out / "daily_weather.parquet", index=False)
 #     df_hourly.to_csv(out / "hourly_weather.csv", index=False)
 #     df_daily.to_csv(out / "daily_weather.csv", index=False)
+
 
 def load_files(df_hourly: pd.DataFrame, df_daily: pd.DataFrame) -> None:
     out = Path("data/processed")
@@ -92,12 +101,14 @@ def load_files(df_hourly: pd.DataFrame, df_daily: pd.DataFrame) -> None:
     df_hourly.to_csv(out / "hourly_weather.csv", index=False)
     df_daily.to_csv(out / "daily_weather.csv", index=False)
 
+
 def load_sql(df_daily: pd.DataFrame, db_uri: str | None) -> None:
     if not db_uri:
         return
     eng = create_engine(db_uri)
     with eng.begin() as conn:
         df_daily.to_sql("weather_daily", con=conn, if_exists="replace", index=False)
+
 
 def main():
     st = get_settings()
@@ -113,7 +124,10 @@ def main():
     daily = aggregate_daily(hourly)
     load_files(hourly, daily)
     load_sql(daily, st.db_uri)
-    print("✅ Pipeline concluído: arquivos em data/processed/ e (opcional) tabela SQL 'weather_daily'.")
+    print(
+        "✅ Pipeline concluído: arquivos em data/processed/ e (opcional) tabela SQL 'weather_daily'."
+    )
+
 
 if __name__ == "__main__":
     main()

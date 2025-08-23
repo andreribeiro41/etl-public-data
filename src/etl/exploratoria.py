@@ -1,6 +1,6 @@
 import pandas as pd
 
-df  = pd.read_csv('data/processed/daily_weather.csv')
+df = pd.read_csv("data/processed/daily_weather.csv")
 print(df.head())
 
 # import pandas as pd, sqlalchemy as sa
